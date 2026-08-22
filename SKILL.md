@@ -1,13 +1,9 @@
 # dry4python
 
-Use this command as the Python dry quality gate in SwarmForge.
+Use `dry4python` for DRY verification of Python projects.
 
-## Install
-
-```bash
-python -m pip install --upgrade "git+https://github.com/lukasa1993/dry4python.git"
-```
-
-## Verify
-
-Read `README.md`, inspect `dry4python --help`, and run the command from the project root. Keep generated reports under `target/` and do not commit them.
+1. Run `dry4python --help` before first use.
+2. Use the project test/build commands that create current coverage or execute the full unit suite.
+3. Run the gate with `--fail`.
+4. Treat exit `1` as an infrastructure or configuration failure. Do not report it as a quality pass.
+5. Treat exit `2` as a quality-gate failure.

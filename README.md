@@ -1,26 +1,13 @@
 # dry4python
 
-`dry4python` finds repeated normalized token blocks in Python source. Identifiers, numeric literals, and string literals are normalized, so structurally equal code is detected even when names and constants differ.
-
-## Install
+`dry4python` finds normalized duplicate code in Python projects with Tree-sitter tokens. It reports cross-file and non-overlapping same-file duplicates, extends matching windows to maximal blocks, and suppresses contained results.
 
 ```bash
 pipx install git+https://github.com/lukasa1993/dry4python.git
-```
-
-## Run
-
-```bash
 dry4python --min-tokens 30 --fail
 ```
 
-Use path fragments to limit the scan:
-
-```bash
-dry4python src/domain src/services
-```
-
-Use `--json` for machine-readable output. The command exits with status `2` when `--fail` is set and duplication is found.
+Exit status: `0` pass, `1` analysis error, `2` duplicates found when `--fail` is active.
 
 ## Development
 

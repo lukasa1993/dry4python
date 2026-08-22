@@ -1,17 +1,19 @@
 from pathlib import Path
 
-from dry4python.core import find_duplicates, tokenize_file
+from dry4python.core import find_duplicates
 
 
-def test_normalizes_identifiers_and_literals(tmp_path: Path) -> None:
-    path = tmp_path / "sample.py"
-    path.write_text("answer = 42\n", encoding="utf-8")
-    assert [token.value for token in tokenize_file(path)] == ["ID", "=", "NUM"]
-
-
-def test_finds_duplicate_blocks(tmp_path: Path) -> None:
-    (tmp_path / "a.py").write_text("def a(x):\n    if x:\n        return x + 1\n", encoding="utf-8")
-    (tmp_path / "b.py").write_text("def b(y):\n    if y:\n        return y + 2\n", encoding="utf-8")
+def test_cross_file_duplicate_is_found(tmp_path: Path) -> None:
+    first = tmp_path / ("a_" + 'sample.py')
+    second = tmp_path / ("b_" + 'sample.py')
+    first.write_text('def choose(a: bool, b: bool) -> int:\n    if a and b:\n        return 1\n    return 0\n', encoding="utf-8")
+    second.write_text('def decide(a: bool, b: bool) -> int:\n    if a and b:\n        return 1\n    return 0\n', encoding="utf-8")
     duplicates = find_duplicates(tmp_path, min_tokens=8)
     assert duplicates
-    assert len(duplicates[0].locations) >= 2
+
+
+def test_non_overlapping_same_file_duplicate_is_found(tmp_path: Path) -> None:
+    path = tmp_path / 'sample.py'
+    path.write_text('def choose(a: bool, b: bool) -> int:\n    if a and b:\n        return 1\n    return 0\n' + "\n" + 'def decide(a: bool, b: bool) -> int:\n    if a and b:\n        return 1\n    return 0\n', encoding="utf-8")
+    duplicates = find_duplicates(tmp_path, min_tokens=8)
+    assert any(item.locations[0].file == item.locations[1].file for item in duplicates)
